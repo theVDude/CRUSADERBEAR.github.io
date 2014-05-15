@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Canvas Test</title>
+		<script type="text/javascript">
+			var g = 40;
+			var gridOn = false;
+			var gridExtra = false;
+			var hitBox = false;
+			var fade = 0.15;
+			
+			//colors
+				    
+			var wall = "#777672";
+			var floor = "rgb(212,212,212)";
+			var gridline = "rgb(192,192,192)";
+			var red = "rgb(198,1,44)";
+			var blue = "rgb(0,156,189)";
+			var yellow  = "rgb(213, 201, 49)";
+			var darkred = "rgb(138,0,0)";
+			var darkblue = "rgb(0,106,139)";
+			var darkyellow  = "rgb(188, 176, 24)";
+			var green   = "rgb(53, 216, 49)";
+			var misc  = "rgb(0, 65, 89)";
+			var darkmisc = "rgb(0,15,39)";
+			var button = "rgb(230,138,59)";
+			var darkbutton = "rgb(210,118,39)";
+			
+			function draw(){
+				var canvas = document.getElementById('tutorial');
+				if (canvas.getContext){
+				  	var ctx = canvas.getContext('2d');
+				  					  	
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+				  	
+				  	ctx.lineWidth = 0.75;
+				    
+				    //walls
+				    
+				    ctx.fillStyle = wall;
+				  	cleanRect(ctx,0,0)
+				  	cleanRect(ctx,2,0);
+					cleanRect(ctx,3,0);
+					cleanRect(ctx,4,0);
+					cleanRect(ctx,5,0);
+					cleanRect(ctx,6,0);
+					cleanRect(ctx,2,1);
+					cleanRect(ctx,4,1);
+					cleanRect(ctx,6,1);
+					cleanRect(ctx,0,2);
+					cleanRect(ctx,4,2);
+					cleanRect(ctx,0,3);
+					cleanRect(ctx,4,3);
+					cleanRect(ctx,7,3);
+					cleanRect(ctx,0,4);
+					cleanRect(ctx,1,4);
+					cleanRect(ctx,2,4);
+					cleanRect(ctx,3,4);
+					cleanRect(ctx,4,4);
+					cleanRect(ctx,5,4);
+					cleanRect(ctx,6,4);
+					cleanRect(ctx,7,4);
+					cleanRect(ctx,0,5);
+					cleanRect(ctx,4,5);
+					cleanRect(ctx,7,5);
+					cleanRect(ctx,0,6);
+					cleanRect(ctx,4,6);
+					cleanRect(ctx,8,6);
+					cleanRect(ctx,9,6);
+					cleanRect(ctx,2,7);
+					cleanRect(ctx,4,7);
+					cleanRect(ctx,6,7);
+					cleanRect(ctx,2,8);
+					cleanRect(ctx,3,8);
+					cleanRect(ctx,4,8);
+					cleanRect(ctx,5,8);
+					cleanRect(ctx,6,8);
+					
+					//floor
+					
+					ctx.fillStyle = floor;
+					floorRect(ctx,2,2);
+					floorRect(ctx,3,1);
+					floorRect(ctx,3,2);
+					floorRect(ctx,5,1);
+					floorRect(ctx,5,2);
+					floorRect(ctx,5,5);
+					floorRect(ctx,6,5);
+					
+					//teamtiles
+					
+					ctx.globalAlpha = fade;
+					ctx.fillStyle = red;
+					ctx.fillRect(3*g,1*g,g,g);
+					ctx.fillStyle = blue;
+					ctx.fillRect(3*g,2*g,g,g);
+					ctx.globalAlpha = 1.0;
+					grid(ctx,3,1);
+					grid(ctx,3,2);
+					
+					//endzones
+					
+					ctx.globalAlpha = fade;
+					ctx.fillStyle = red;
+					ctx.fillRect(5*g,1*g,g,g);
+					ctx.fillStyle = blue;
+					ctx.fillRect(5*g,2*g,g,g);
+					ctx.globalAlpha = 1.0;
+					
+					ctx.strokeStyle = red;
+					hash(ctx,5,1);
+					
+					ctx.strokeStyle = blue;
+					hash(ctx,5,2);
+					
+					grid(ctx,5,1);
+					grid(ctx,5,2);
+					
+					//balls
+					
+					ctx.fillStyle = darkred;
+					cleanCircle(ctx,6,2,19);
+					ctx.fillStyle = red;
+					cleanCircle(ctx,6,2,18);
+					
+					ctx.fillStyle = darkblue;
+					cleanCircle(ctx,6,3,19);
+					ctx.fillStyle = blue;
+					cleanCircle(ctx,6,3,18);
+					
+					//spikes
+					
+					ctx.fillStyle = darkmisc;
+					bang(ctx,2,3,14);
+					ctx.fillStyle = misc;
+					bang(ctx,2,3,12);
+					
+					//button
+					
+					ctx.fillStyle = darkbutton;
+					cleanCircle(ctx,2,5,8);
+					ctx.fillStyle = button;
+					cleanCircle(ctx,2,5,7);
+					
+					//present flags
+					
+					flag(ctx,7,0,yellow,darkyellow)
+					flag(ctx,8,0,red,darkred)
+					flag(ctx,9,0,blue,darkblue)
+					
+					//vacant flags
+					
+					flag(ctx,7,1,"rgb(207,207,207)","rgb(202,202,202)")
+					flag(ctx,8,1,"rgb(207,207,207)","rgb(202,202,202)")
+					flag(ctx,9,1,"rgb(207,207,207)","rgb(202,202,202)")
+					
+					//bombs
+					
+					ctx.fillStyle = "rgb(168,168,168)";
+					cleanCircle(ctx,5,5,15);
+					ctx.fillStyle = "rgb(192,192,192)";
+					bang(ctx,5,5,11);
+					ctx.fillStyle = "rgb(216,216,216)";
+					bang(ctx,5,5,7);
+					
+					ctx.fillStyle = "rgb(48,48,48)";
+					cleanCircle(ctx,6,5,15);
+					ctx.fillStyle = "rgb(177,48,26)";
+					bang(ctx,6,5,11);
+					ctx.fillStyle = "rgb(255,153,65)";
+					bang(ctx,6,5,7);
+					
+					//tagpro powerup
+					
+					ctx.fillStyle = "rgb(1,74,0)";
+					cleanCircle(ctx,7,8,15);
+					ctx.fillStyle = "rgb(1,144,0)";
+					cleanCircle(ctx,7,8,14);
+					ctx.fillStyle = "rgb(62,254,57)";
+					cleanCircle(ctx,7,8,9);
+					ctx.fillStyle = "rgb(1,144,0)";
+					cleanCircle(ctx,7,8,7);
+					
+					//grip powerup
+					
+					ctx.fillStyle = "rgb(1,98,49)";
+					cleanCircle(ctx,8,8,15);
+					ctx.fillStyle = "rgb(1,148,99)";
+					cleanCircle(ctx,8,8,14);
+					ctx.fillStyle = "rgb(99,238,203)";
+					ctx.save();
+						ctx.translate(8.5*g,8.5*g-3);
+						ctx.scale(1,0.8);
+						ctx.save();
+							ctx.translate(-6,0);
+							isoc(ctx,0,0,9,15*Math.PI/16);
+						ctx.restore();
+						ctx.save();
+							isoc(ctx,0,0,9,15*Math.PI/16);
+						ctx.restore();
+						ctx.save();
+							ctx.translate(6,0);
+							isoc(ctx,0,0,9,15*Math.PI/16);
+						ctx.restore();
+					ctx.restore();
+					ctx.save();
+						ctx.translate(-6,0);
+						ctx.translate(8.5*g,8.5*g);
+						ctx.scale(1,0.8);
+					ctx.restore();
+					
+					//rolling bomb powerup
+					
+					ctx.fillStyle = "rgb(132,142,1)";
+					cleanCircle(ctx,9,8,15);
+					ctx.fillStyle = "rgb(176,187,2)";
+					cleanCircle(ctx,9,8,14);
+					ctx.fillStyle = "rgb(247,255,144)";
+					bang(ctx,9,8,10);
+					
+					//top speed powerup
+					
+					ctx.fillStyle = "rgb(1,98,49)";
+					cleanCircle(ctx,10,8,15);
+					ctx.fillStyle = "rgb(1,148,99)";
+					cleanCircle(ctx,10,8,14);
+					ctx.save();
+						ctx.strokeStyle = "rgb(99,238,203)";
+						ctx.lineWidth = 2.0;
+						ctx.beginPath();
+						ctx.arc(10.5*g,8.5*g,9,0,Math.PI*2,false);
+						ctx.clip();
+							ctx.beginPath();
+							ctx.moveTo(10*g,8.5*g-6);
+							ctx.lineTo(11*g,8.5*g-6);
+							ctx.moveTo(10*g,8.5*g-2);
+							ctx.lineTo(11*g,8.5*g-2);
+							ctx.moveTo(10*g,8.5*g+2);
+							ctx.lineTo(11*g,8.5*g+2);
+							ctx.moveTo(10*g,8.5*g+6);
+							ctx.lineTo(11*g,8.5*g+6);
+							ctx.stroke();
+					ctx.restore();
+					
+					//gates
+					ctx.fillStyle = "rgb(25,51,38)";
+					cleanRect(ctx,10,1);
+					ctx.fillStyle = green;
+					cleanRect(ctx,10,2);
+					ctx.fillStyle = red;
+					cleanRect(ctx,10,3);
+					ctx.fillStyle = blue;
+					cleanRect(ctx,10,4);
+					
+					//window.location = canvas.toDataURL("image/png");
+					
+					
+					//var img = canvas.toDataURL("image/png");
+					//document.write('<img src="'+img+'"/>');
+				}
+				
+				var canvas2 = document.getElementById('preview');
+				if (canvas2.getContext){
+				  	var ctx2 = canvas2.getContext('2d');
+				  	for(var i = 0; i < 24; i++) {
+				  		for(var j = 0; j < 16; j++) {
+				  			ctx2.drawImage(canvas,2*g,2*g,g,g,i*g,j*g,g,g);
+				  		}
+				  	}
+				  	for(var i= 0; i < 16; i++) {
+				  		ctx2.drawImage(canvas,0*g,0*g,g,g,0*g,i*g,g,g);
+				  	}
+				  	for(var i= 0; i < 16; i++) {
+				  		ctx2.drawImage(canvas,0*g,0*g,g,g,23*g,i*g,g,g);
+				  	}
+				  	
+				  	for(var i= 0; i < 24; i++) {
+				  		ctx2.drawImage(canvas,0*g,0*g,g,g,i*g,0*g,g,g);
+				  	}
+				  	for(var i= 0; i < 24; i++) {
+				  		ctx2.drawImage(canvas,0*g,0*g,g,g,i*g,15*g,g,g);
+				  	}
+				  	
+				  	
+				  	for(var i= 9; i < 12; i++) {
+				  		ctx2.drawImage(canvas,0*g,0*g,g,g,6*g,i*g,g,g);
+				  	}
+				  	
+				  	for(var i= 4; i < 7; i++) {
+				  		ctx2.drawImage(canvas,0*g,0*g,g,g,17*g,i*g,g,g);
+				  	}
+				  	
+				  	sprite(ctx2,canvas,0,0,13,6);
+				  	sprite(ctx2,canvas,0,0,10,9);
+				  	
+				  	sprite(ctx2,canvas,0,0,3,5);
+				  	sprite(ctx2,canvas,0,0,3,6);
+				  	sprite(ctx2,canvas,0,0,5,3);
+				  	sprite(ctx2,canvas,0,0,6,3);
+				  	sprite(ctx2,canvas,0,0,7,3);
+				  	
+				  	sprite(ctx2,canvas,0,0,20,9);
+				  	sprite(ctx2,canvas,0,0,20,10);
+				  	sprite(ctx2,canvas,0,0,18,12);
+				  	sprite(ctx2,canvas,0,0,17,12);
+				  	sprite(ctx2,canvas,0,0,16,12);
+				  
+				  	sprite(ctx2,canvas,10,3,7,9);
+				  	sprite(ctx2,canvas,10,3,8,9);
+				  	sprite(ctx2,canvas,10,3,9,9);
+				  	
+				  	sprite(ctx2,canvas,10,4,14,6);
+				  	sprite(ctx2,canvas,10,4,15,6);
+				  	sprite(ctx2,canvas,10,4,16,6);
+				  	
+				  	sprite(ctx2,canvas,10,2,11,8);
+				  	sprite(ctx2,canvas,10,2,12,7);
+				  	
+				  	sprite(ctx2,canvas,10,1,1,6);
+				  	sprite(ctx2,canvas,10,1,2,6);
+				  	sprite(ctx2,canvas,10,1,6,1);
+				  	sprite(ctx2,canvas,10,1,6,2);
+				  	
+				  	sprite(ctx2,canvas,2,5,10,6);
+				  	sprite(ctx2,canvas,2,5,13,9);
+				  	
+				  	sprite(ctx2,canvas,2,5,6,6);
+				  	sprite(ctx2,canvas,2,5,17,9);
+				  	
+				  	sprite(ctx2,canvas,8,1,5,5);
+				  	sprite(ctx2,canvas,9,0,18,10);
+				  	
+				  	sprite(ctx2,canvas,6,5,1,1);
+				  	sprite(ctx2,canvas,5,5,22,14);
+				  	
+				  	sprite(ctx2,canvas,7,8,21,2);
+				  	sprite(ctx2,canvas,9,8,2,13);
+				  	sprite(ctx2,canvas,8,8,9,7);
+				  	
+				  	sprite(ctx2,canvas,6,2,10.2,5.6);
+				  	sprite(ctx2,canvas,6,3,13.3,9.2);
+				  	
+				  	sprite(ctx2,canvas,2,3,4,9);
+				  	sprite(ctx2,canvas,2,3,19,6);
+				}
+			}
+			
+			function cleanCircle(ctx,x,y,r){				
+				ctx.beginPath();
+				ctx.arc((x+0.5)*g,(y+0.5)*g,r,0,Math.PI*2,false);
+				ctx.fill();
+			}
+			
+			function cleanRect(ctx,x,y){
+				ctx.fillRect(x*g,y*g,g,g);
+				if(gridExtra) {
+					grid(ctx,x,y);
+				}
+			}
+			
+			function floorRect(ctx,x,y){
+				ctx.fillRect(x*g,y*g,g,g);
+				if(gridOn) {
+					grid(ctx,x,y);
+				}
+			}
+			
+			function grid(ctx,x,y){
+				ctx.strokeStyle = gridline;
+				ctx.beginPath();
+				ctx.moveTo(x*g+0.5,y*g+0.5);
+				ctx.lineTo(x*g+g-0.5,y*g+0.5);
+				ctx.lineTo(x*g+g-0.5,y*g+g-0.5);
+				ctx.lineTo(x*g+0.5,y*g+g-0.5);
+				ctx.lineTo(x*g+0.5,y*g+0.5);
+				ctx.stroke();
+				/*
+				ctx.beginPath();
+				ctx.moveTo(x*g+0.5,y*g+0.5);
+				ctx.lineTo(x*g+0.5,y*g+g-0.5);
+				ctx.stroke();
+				*/
+			}
+			
+			function hash(ctx,x,y){
+				ctx.beginPath();
+				ctx.moveTo(x*g,y*g+0.25*g);
+				ctx.lineTo(x*g+0.25*g,y*g);
+				ctx.moveTo(x*g,y*g+0.5*g);
+				ctx.lineTo(x*g+0.5*g,y*g);
+				ctx.moveTo(x*g,y*g+0.75*g);
+				ctx.lineTo(x*g+0.75*g,y*g);
+				ctx.moveTo(x*g,y*g+g);
+				ctx.lineTo(x*g+g,y*g);
+				ctx.moveTo(x*g+0.25*g,y*g+g);
+				ctx.lineTo(x*g+g,y*g+0.25*g);
+				ctx.moveTo(x*g+0.5*g,y*g+g);
+				ctx.lineTo(x*g+g,y*g+0.5*g);
+				ctx.moveTo(x*g+0.75*g,y*g+g);
+				ctx.lineTo(x*g+g,y*g+0.75*g);
+				ctx.stroke();
+			}
+			
+			function equi(ctx,x,y,r,theta){
+				var c6 = Math.cos(Math.PI/6);
+				var s6 = Math.sin(Math.PI/6);
+				ctx.save();
+					ctx.translate(x,y);
+					ctx.rotate(theta);
+					ctx.beginPath();
+					ctx.moveTo(0,-r);
+					ctx.lineTo(r*c6, r*s6);
+					ctx.lineTo(-r*c6, r*s6);
+					ctx.fill();
+				ctx.restore();
+			}
+			
+			function isoc(ctx,x,y,h,theta){
+				ctx.save();
+					ctx.translate(x,y);
+					ctx.rotate(theta+(Math.PI/16));
+					ctx.beginPath();
+					ctx.moveTo(-h/3,0);
+					ctx.lineTo(0,-h);
+					ctx.lineTo(h/3,0);
+					ctx.fill();
+				ctx.restore();
+			}
+			
+			function flag(ctx,x,y,c1,c2){
+				ctx.save();
+					ctx.translate(x*g,y*g);
+					ctx.fillStyle = c2;
+					equi(ctx,0.5*g,0.5*g,15,-Math.PI/16);
+					ctx.fillStyle = c1;
+					equi(ctx,0.5*g,0.5*g,13,-Math.PI/16);
+					ctx.strokeStyle = misc;
+					ctx.beginPath();
+					ctx.moveTo(5,g-2);
+					ctx.lineTo(20 - 15*Math.sin(Math.PI/16), 21 - 15*Math.cos(Math.PI/16));
+					ctx.stroke();
+					if(hitBox) {
+						ctx.strokeStyle = c2;				
+						ctx.beginPath();
+						ctx.arc(0.5*g,0.5*g,14,0,Math.PI*2,false);
+						ctx.stroke();
+					}
+				ctx.restore();
+			}
+			
+			function bang(ctx,x,y,r){
+				ctx.save();
+					ctx.translate((x+0.5)*g,(y+0.5)*g);
+					isoc(ctx,0,0,r,0);
+					isoc(ctx,0,0,r,Math.PI/4);
+					isoc(ctx,0,0,r,2*Math.PI/4);
+					isoc(ctx,0,0,r,3*Math.PI/4);
+					isoc(ctx,0,0,r,4*Math.PI/4);
+					isoc(ctx,0,0,r,5*Math.PI/4);
+					isoc(ctx,0,0,r,6*Math.PI/4);
+					isoc(ctx,0,0,r,7*Math.PI/4);
+					
+					isoc(ctx,0,0,13*r/15,Math.PI/8);
+					isoc(ctx,0,0,11*r/15,3*Math.PI/8);
+					isoc(ctx,0,0,13*r/15,5*Math.PI/8);
+					isoc(ctx,0,0,11*r/15,7*Math.PI/8);
+					isoc(ctx,0,0,13*r/15,9*Math.PI/8);
+					isoc(ctx,0,0,11*r/15,11*Math.PI/8);
+					isoc(ctx,0,0,13*r/15,13*Math.PI/8);
+					isoc(ctx,0,0,11*r/15,15*Math.PI/8);
+				ctx.restore();
+			}
+			
+			function sprite(dctx,sctx,sx,sy,dx,dy){
+				dctx.drawImage(sctx,sx*g,sy*g,g,g,dx*g,dy*g,g,g);
+			}
+			
+			function toggleGrid() {
+				if (gridOn) {
+					gridOn = false;
+				} else {
+					gridOn = true;
+				}
+				draw();
+			}
+			
+			function toggleExtraGrid() {
+				if (gridExtra) {
+					gridExtra = false;
+				} else {
+					gridExtra = true;
+				}
+				draw();
+			}
+						
+			function updateInfo(element,color) {
+							switch (element) {
+					case 'wall':
+						wall = '#'+color;
+						break;
+					case 'floor':
+						floor = '#'+color;
+						break;
+					case 'gridline':
+						gridline = '#'+color;
+						break;
+					case 'red':
+						red = '#'+color;
+						break;
+					case 'blue':
+						blue = '#'+color;
+						break;
+					case 'yellow':
+						yellow = '#'+color;
+						break;
+					case 'darkred':
+						darkred = '#'+color;
+						break;
+					case 'darkblue':
+						darkblue = '#'+color;
+						break;
+					case 'darkyellow':
+						darkyellow = '#'+color;
+						break;
+					case 'green':
+						green = '#'+color;
+						break;
+					case 'misc':
+						misc = '#'+color;
+						break;
+					case 'darkmisc':
+						darkmisc = '#'+color;
+						break;
+					case 'button':
+						button = '#'+color;
+						break;
+					case 'darkbutton':
+						darkbutton = '#'+color;
+						break;
+				}
+				draw();
+			}
+			
+			
+			
+			
+		</script>
+		<script type="text/javascript" src="jscolor/jscolor.js"></script>
+		<style type="text/css">
+		  	canvas { 
+		  		float:left;
+		  	}
+		  	#tutorial {
+		  		display:none;
+		  	}
+		  	tr {
+		  		text-align:right;
+		  	}
+		  	table tr td {
+		  		border:1px solid black;
+		  	}
+		</style>
+  	</head>
+  	<body onload="draw();">
+		<canvas id="preview" width="960" height="640"></canvas>
+    	<table>
+    	<tr><td>Wall:</td><td><input class="color {onImmediateChange:'updateInfo(\'wall\',this);'}" value="777672"></td></tr>
+		<tr><td>Floor:</td><td><input class="color {onImmediateChange:'updateInfo(\'floor\',this);'}" value="d4d4d4"></td></tr>
+		<tr><td>Gridlines:</td><td><input class="color {onImmediateChange:'updateInfo(\'gridline\',this);'}" value="c0c0c0"></td>
+		<td><input type="checkbox" onchange="toggleGrid()"></input></td>
+		<td><input type="checkbox" onchange="toggleExtraGrid()"></input></td></tr>
+		<tr><td>Red:</td><td><input class="color {onImmediateChange:'updateInfo(\'red\',this);'}" value="c6012c"></td></tr>
+		<tr><td>Blue:</td><td><input class="color {onImmediateChange:'updateInfo(\'blue\',this);'}" value="009cbd"></td></tr>
+		<tr><td>Neutral:</td><td><input class="color {onImmediateChange:'updateInfo(\'yellow\',this);'}" value="d5c931"></td></tr>
+		<tr><td></td><td><input class="color {onImmediateChange:'updateInfo(\'darkred\',this);'}" value="8a0000"></td></tr>
+		<tr><td></td><td><input class="color {onImmediateChange:'updateInfo(\'darkblue\',this);'}" value="006a8b"></td></tr>
+		<tr><td></td><td><input class="color {onImmediateChange:'updateInfo(\'darkyellow\',this);'}" value="bcb018"></td></tr>
+		<tr><td>Green:</td><td><input class="color {onImmediateChange:'updateInfo(\'green\',this);'}" value="35d831"></td></tr>
+		<tr><td></td><td><input class="color {onImmediateChange:'updateInfo(\'misc\',this);'}" value="004159"></td></tr>
+		<tr><td></td><td><input class="color {onImmediateChange:'updateInfo(\'darkmisc\',this);'}" value="000f27"></td></tr>
+		<tr><td>Button:</td><td><input class="color {onImmediateChange:'updateInfo(\'button\',this);'}" value="e68a3b"></td></tr>
+		<tr><td></td><td><input class="color {onImmediateChange:'updateInfo(\'darkbutton\',this);'}" value="d27627"></td></tr>
+		</table>
+		
+    	<canvas id="tutorial" width="520" height="360"></canvas>
+  	</body>
+</html>
